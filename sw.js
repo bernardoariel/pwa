@@ -1,6 +1,7 @@
 self.addEventListener('install', e => {
     const cacheProm = caches.open('cache-1').then(cache => {
         return cache.addAll([
+            '/',
             '/index.html',
             '/css/style.css',
             '/img/image.png',
@@ -14,3 +15,9 @@ self.addEventListener('install', e => {
     });
     e.waitUntil(cacheProm);
 });
+
+self.addEventListener('fetch',()=>{
+    // 1 - Cache Only 
+    // no va a haber petion que sale a la web
+    e.respondWith( caches.match( e.request ) )
+})
