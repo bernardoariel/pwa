@@ -1,6 +1,6 @@
 // const CACHE_NAME = 'cache-1'
 
-const CACHE_STATIC_NAME = 'static-v1'
+const CACHE_STATIC_NAME = 'static-v2'
 const CACHE_DYNAMIC_NAME = 'dynamic-v1'
 
 const CACHE_INMUTABLE_NAME = 'inmutable-v1'
