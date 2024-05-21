@@ -36,9 +36,7 @@ self.addEventListener('fetch',e=>{
 
         // No existe el archivo
         // tengo que ir a la web
-      
-        console.log('No existe', e.request)
-        
+        console.log('No existe', e.request.url)
         return fetch(e.request)
           .then(newResponse =>{
             caches.open(CACHE_DYNAMIC_NAME).then( cache =>{
