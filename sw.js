@@ -2,14 +2,15 @@
 
 const CACHE_STATIC_NAME = 'static-v3'
 const CACHE_DYNAMIC_NAME = 'dynamic-v1'
-
 const CACHE_INMUTABLE_NAME = 'inmutable-v1'
+
+const CACHE_DYNAMIC_LIMIT = 50;
 
 const limpiarCache =(cacheName,numeroItems)=>{
   caches.open(cacheName)
     .then( cache =>{
       return cache.keys()
-              .then( key=>{
+              .then( keys=>{
                 if(keys.length > numeroItems){
                   cache.delete(keys[0])
                     .then(limpiarCache(cacheName,numeroItems))
@@ -39,16 +40,30 @@ self.addEventListener('install', e => {
 });
 
 self.addEventListener('fetch',e=>{
+    // 3- Network with cache Fallback
+    
+    const respuesta = fetch(e.request).then( res=>{
+      
+      if(!res) return caches.match(e.request)
+      caches.open(CACHE_DYNAMIC_NAME)
+        .then( cache =>{
+          cache.put(e.request, res)
+          limpiarCache(CACHE_DYNAMIC_NAME,CACHE_DYNAMIC_LIMIT)
+        });
+      return res.clone()
+    }).catch( err=>{
+      return caches.match(e.request)
+    })
 
+    e.respondWith(respuesta)
     // 2- Cache with Network Fallback
-    const respuesta = caches.match( e.request )
+    /* const respuesta = caches.match( e.request )
       .then( res =>{
 
-        //si la respuesta existe retornamos la respuesta que es del cache
+
         if(res)return res
 
-        // No existe el archivo
-        // tengo que ir a la web
+      
         console.log('No existe', e.request.url)
         return fetch(e.request)
           .then(newResponse =>{
@@ -63,7 +78,7 @@ self.addEventListener('fetch',e=>{
           })
       })
 
-    e.respondWith(respuesta)
+    e.respondWith(respuesta) */
     // 1 - Cache Only 
     // no va a haber petion que sale a la web
     // e.respondWith( caches.match( e.request ) )
