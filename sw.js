@@ -1,10 +1,23 @@
 // const CACHE_NAME = 'cache-1'
 
-const CACHE_STATIC_NAME = 'static-v1'
+const CACHE_STATIC_NAME = 'static-v3'
 const CACHE_DYNAMIC_NAME = 'dynamic-v1'
 
 const CACHE_INMUTABLE_NAME = 'inmutable-v1'
 
+const limpiarCache =(cacheName,numeroItems)=>{
+  caches.open(cacheName)
+    .then( cache =>{
+      return cache.keys()
+              .then( key=>{
+                if(keys.length > numeroItems){
+                  cache.delete(keys[0])
+                    .then(limpiarCache(cacheName,numeroItems))
+                }
+
+              })
+    })
+}
 self.addEventListener('install', e => {
     const cacheProm = caches.open(CACHE_STATIC_NAME).then(cache => {
         return cache.addAll([
@@ -42,6 +55,7 @@ self.addEventListener('fetch',e=>{
             caches.open(CACHE_DYNAMIC_NAME).then( cache =>{
               if(cache){
                 cache.put(e.request, newResponse)
+                limpiarCache(CACHE_DYNAMIC_NAME,5)
               }
 
             })
