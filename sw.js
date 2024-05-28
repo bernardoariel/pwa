@@ -1,10 +1,23 @@
 // const CACHE_NAME = 'cache-1'
 
-const CACHE_STATIC_NAME = 'static-v1'
+const CACHE_STATIC_NAME = 'static-v2'
 const CACHE_DYNAMIC_NAME = 'dynamic-v1'
 
 const CACHE_INMUTABLE_NAME = 'inmutable-v1'
 
+const limpiarCache =(cacheName,numeroItems)=>{
+  caches.open(cacheName)
+    .then( cache =>{
+      return cache.keys()
+              .then( keys=>{
+                if(keys.length > numeroItems){
+                  cache.delete(keys[0])
+                   
+                }
+
+              })
+    })
+}
 self.addEventListener('install', e => {
     const cacheProm = caches.open(CACHE_STATIC_NAME).then(cache => {
         return cache.addAll([
@@ -36,14 +49,13 @@ self.addEventListener('fetch',e=>{
 
         // No existe el archivo
         // tengo que ir a la web
-      
-        console.log('No existe', e.request)
-        
+        console.log('No existe', e.request.url)
         return fetch(e.request)
           .then(newResponse =>{
             caches.open(CACHE_DYNAMIC_NAME).then( cache =>{
               if(cache){
                 cache.put(e.request, newResponse)
+                limpiarCache(CACHE_DYNAMIC_NAME,5)
               }
 
             })
