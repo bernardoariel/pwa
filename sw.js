@@ -16,7 +16,7 @@ self.addEventListener('install', e => {
     e.waitUntil(cacheProm);
 });
 
-self.addEventListener('fetch',()=>{
+self.addEventListener('fetch',e=>{
     // 1 - Cache Only 
     // no va a haber petion que sale a la web
     e.respondWith( caches.match( e.request ) )
